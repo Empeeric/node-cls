@@ -2,7 +2,7 @@
 
 var test         = require('tap').test
   , EventEmitter = require('events').EventEmitter
-  , cls          = require('../context.js')
+  , cls          = require('../../cls.js')
   ;
 
 function fresh(name, context) {

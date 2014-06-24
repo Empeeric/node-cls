@@ -1,7 +1,7 @@
 'use strict';
 
 var test   = require('tap').test
-  , cls    = require('../context.js')
+  , cls    = require('../../cls.js')
   , domain = require('domain')
   ;
 

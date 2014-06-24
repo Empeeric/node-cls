@@ -1,39 +1,60 @@
 {
-  "name": "continuation-local-storage",
-  "version": "3.0.0",
-  "description": "userland implementation of https://github.com/joyent/node/issues/5243",
-  "main": "context.js",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "test": "tap test/*.tap.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/othiym23/node-continuation-local-storage.git"
-  },
-  "keywords": [
-    "threading",
-    "shared",
-    "context",
-    "domains",
-    "tracing",
-    "logging"
-  ],
-  "author": "Forrest L Norvell <ogd@aoaioxxysz.net>",
-  "contributors": [
-    "Tim Caswell <tim@creationix.com>",
-    "Forrest L Norvell <ogd@aoaioxxysz.net>"
-  ],
-  "license": "BSD",
-  "devDependencies": {
-    "tap": "~0.4.2"
-  },
-  "optionalDependencies": {
-    "async-listener": "0.4.5"
-  },
-  "dependencies": {
-    "emitter-listener": "1.0.1"
-  }
+    "author": "Refael Ackermann<refael@empeeric.com>",
+    "contributors": [
+        "Forrest L Norvell <ogd@aoaioxxysz.net>",
+        "Tim Caswell <tim@creationix.com>",
+        "Forrest L Norvell <ogd@aoaioxxysz.net>"
+    ],
+    "dependencies": {
+        "async-listener": "",
+        "emitter-listener": ""
+    },
+    "description": "userland implementation of CLS via AsyncListener (^0.11.12)",
+    "devDependencies": {
+        "asynctrace": "",
+        "chai": "",
+        "mocha": "",
+        "tap": ""
+    },
+    "directories": {
+        "test": "test"
+    },
+    "engines": {
+        "node": "^0.11.13"
+    },
+    "engineStrict": {
+        "node": "^0.11.13"
+    },
+    "jshintConfig": {
+        "globals": {
+            "after": true,
+            "afterEach": true,
+            "before": true,
+            "beforeEach": true,
+            "describe": true,
+            "it": true,
+            "expect": true,
+            "createNamespace": true
+        },
+        "node": true,
+        "strict": true,
+        "trailing": true,
+        "unused": true
+    },
+    "keywords": [
+        "threading",
+        "shared",
+        "context",
+        "domains",
+        "tracing",
+        "logging"
+    ],
+    "license": "BSD",
+    "main": "cls.js",
+    "name": "cls2",
+    "repository": "Empeeric/node-cls",
+    "scripts": {
+        "test": "tap test/*.tap.js && mocha"
+    },
+    "version": "1.0.0"
 }
