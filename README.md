@@ -1,4 +1,6 @@
-[![NPM](https://nodei.co/npm/continuation-local-storage.png?downloads=true&stars=true)](https://nodei.co/npm/continuation-local-storage/)
+[![Build Status](https://travis-ci.org/Empeeric/node-cls.png?branch=master "Build Status")](https://travis-ci.org/Empeeric/node-cls) 
+
+[![NPM](https://nodei.co/npm/cls2.png)](https://nodei.co/npm/cls2/)
 
 # Continuation-Local Storage
 
