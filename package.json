@@ -57,5 +57,5 @@
   "scripts": {
     "test": "tap test/*.tap.js && mocha"
   },
-  "version": "1.0.0"
+  "version": "1.0.1"
 }
