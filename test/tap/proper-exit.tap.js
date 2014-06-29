@@ -1,6 +1,6 @@
 'use strict';
 
-process.on('uncaughtException', function (err) {
+process.once('uncaughtException', function (err) {
   if (err.message === 'oops') {
     console.log("ok got expected message: %s", err.message);
   }

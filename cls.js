@@ -3,6 +3,8 @@
 var assert = require('assert');
 var wrapEmitter = require('emitter-listener');
 var tracing = require('tracing');
+var EE = require('events').EventEmitter;
+var shimmer = require('shimmer');
 /*
  *
  * CONSTANTS
@@ -10,6 +12,17 @@ var tracing = require('tracing');
  */
 var CONTEXTS_SYMBOL = 'cls@contexts';
 var ERROR_SYMBOL = 'error@context';
+
+
+EE.usingCLS = true;
+shimmer.wrap(EE, 'init', function (original) {
+    return function () {
+        original.apply(this, arguments);
+        if (Namespace._active) Namespace._active.bindEmitter(this);
+    };
+});
+
+
 
 // load polyfill if native support is unavailable
 //if (!process.addAsyncListener) require('async-listener');
@@ -90,6 +103,7 @@ Namespace.prototype.enter = function (context) {
 
     this._set.push(this.active);
     this.active = context;
+    Namespace._active = this;
 };
 
 Namespace.prototype.exit = function (context) {
@@ -99,6 +113,7 @@ Namespace.prototype.exit = function (context) {
     if (this.active === context) {
         assert.ok(this._set.length, "can't remove top context");
         this.active = this._set.pop();
+        Namespace._active = (this.active) ? this : null;
         return;
     }
 

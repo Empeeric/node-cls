@@ -3,7 +3,7 @@
 var http = require('http');
 
 describe("continuation-local state with http connection", function () {
-    it.skip("client server", function (done) {
+    it("client server", function (done) {
         var DATUM1 = "Hello";
         var DATUM2 = "GoodBye";
         var TEST_VALUE = 0x1337;
