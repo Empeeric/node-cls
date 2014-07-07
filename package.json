@@ -6,7 +6,6 @@
     "Forrest L Norvell <ogd@aoaioxxysz.net>"
   ],
   "dependencies": {
-    "async-listener": "",
     "emitter-listener": "",
     "shimmer": ""
   },
