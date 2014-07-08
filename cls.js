@@ -14,13 +14,16 @@ var CONTEXTS_SYMBOL = 'cls@contexts';
 var ERROR_SYMBOL = 'error@context';
 
 
-EE.usingCLS = true;
-shimmer.wrap(EE, 'init', function (original) {
-    return function () {
-        original.apply(this, arguments);
-        if (Namespace._active) Namespace._active.bindEmitter(this);
-    };
-});
+if (!process.env.NO_CLS_FOR_EMMITERS) {
+    EE.usingCLS = true;
+    shimmer.wrap(EE, 'init', function (original) {
+        return function () {
+            original.apply(this, arguments);
+            if (Namespace._active && Object.getPrototypeOf(this).constructor.name == 'IncomingMessage' && !('wrap@before' in this))
+                Namespace._active.bindEmitter(this);
+        };
+    });
+}
 
 
 
