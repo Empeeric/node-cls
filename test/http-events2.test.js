@@ -3,12 +3,23 @@
 var SENTINEL_SOCKET_DATA = 'data\n';
 var SENTINEL_CLS_DATA = 0xabad1dea;
 
-describe.only("continuation-local state with http connection 2", function () {
-    it("client server", function (done) {
-        var http = require('http'),
-            createNamespace = require('../').createNamespace;
+describe("`http` connection - 2", function () {
+    before(function () {
+        require.cache = {};
+        this.http = require('http');
+        this.cls2 = require('../');
+    });
 
-        var namespace = createNamespace('http');
+    after(function () {
+        this.cls2.reset();
+        delete this.cls2;
+        delete this.http;
+        require.cache = {};
+    });
+
+    it("client server", function (done) {
+        var http = this.http;
+        var namespace = this.cls2.createNamespace('http2');
         namespace.run(
             function () {
                 namespace.set('test', SENTINEL_CLS_DATA);
@@ -29,7 +40,7 @@ describe.only("continuation-local state with http connection 2", function () {
 
                 req.on('error', function (e) {
                     expect(namespace.get('test')).equal(SENTINEL_CLS_DATA);
-                    expect(e).property('code').equal('ECONNRESET');
+                    expect(e).property('code').match(/ECONNRESET|ECONNREFUSED/);
                     done();
                 });
 

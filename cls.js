@@ -1,9 +1,9 @@
 'use strict';
 
+var EE = require('events').EventEmitter;
 var assert = require('assert');
 var wrapEmitter = require('emitter-listener');
 var tracing = require('tracing');
-var EE = require('events').EventEmitter;
 var shimmer = require('shimmer');
 /*
  *
@@ -14,13 +14,13 @@ var CONTEXTS_SYMBOL = 'cls@contexts';
 var ERROR_SYMBOL = 'error@context';
 
 
-if (!process.env.NO_CLS_FOR_EMMITERS) {
+
+if (!process.env.NO_CLS_FOR_EMMITERS && !EE.usingCLS) {
     EE.usingCLS = true;
     shimmer.wrap(EE, 'init', function (original) {
         return function () {
             original.apply(this, arguments);
-            if (Namespace._active && Object.getPrototypeOf(this).constructor.name == 'IncomingMessage' && !('wrap@before' in this))
-                Namespace._active.bindEmitter(this);
+            filteredEEBind(this, Namespace._active);
         };
     });
 }
@@ -101,6 +101,7 @@ Namespace.prototype.bind = function (fn, context) {
     };
 };
 
+
 Namespace.prototype.enter = function (context) {
     assert.ok(context, "context must be provided for entering");
 
@@ -108,6 +109,7 @@ Namespace.prototype.enter = function (context) {
     this.active = context;
     Namespace._active = this;
 };
+
 
 Namespace.prototype.exit = function (context) {
     assert.ok(context, "context must be provided for exiting");
@@ -128,6 +130,7 @@ Namespace.prototype.exit = function (context) {
 
     this._set.splice(index, 1);
 };
+
 
 Namespace.prototype.bindEmitter = function (emitter) {
     assert.ok(emitter.on && emitter.addListener && emitter.emit, "can only bind real EEs");
@@ -152,15 +155,46 @@ Namespace.prototype.bindEmitter = function (emitter) {
 
         var wrapped = unwrapped;
         var contexts = unwrapped[CONTEXTS_SYMBOL];
+        var thunk = null;
         Object.keys(contexts).forEach(function (name) {
-            var thunk = contexts[name];
+            thunk = contexts[name];
             wrapped = thunk.namespace.bind(wrapped, thunk.context);
         });
-        return wrapped;
+        var patched = function () {
+            for (var i = 0; i < arguments.length; ++i){
+                var arg = arguments[0];
+                filteredEEBind(arg, thunk.context);
+            }
+            wrapped.apply(this, arguments);
+        };
+        return patched;
     }
 
     wrapEmitter(emitter, attach, bind);
 };
+
+
+function filteredEEBind(target, ctx) {
+    if (!(target instanceof EE)) return;
+    if (!ctx) return;
+    if ('wrap@before' in target) return;
+
+    var name = Object.getPrototypeOf(target).constructor.name;
+    switch (name) {
+        case  'ClientRequest':
+        case  'IncomingMessage':
+        case  'Server':
+            Namespace._active.bindEmitter(target);
+            break;
+
+        case  'Socket':
+            var server = target.server;
+            if (server && 'wrap@before' in server)
+                Namespace._active.bindEmitter(target);
+            break;
+    }
+}
+
 
 /**
  * If an error comes out of a namespace, it will have a context attached to it.

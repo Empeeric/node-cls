@@ -1,15 +1,28 @@
 'use strict';
 
-var net = require('net');
+var DATUM1 = "Hello";
+var DATUM2 = "GoodBye";
+var TEST_VALUE = 0x1337;
+var TEST_VALUE2 = "MONKEY";
 
-describe("continuation-local state with net connection", function () {
+
+describe("`net` connection", function () {
+    before(function () {
+        require.cache = {};
+        this.net = require('net');
+        this.cls2 = require('../');
+    });
+
+    after(function () {
+        this.cls2.reset();
+        delete this.cls2;
+        delete this.net;
+        require.cache = {};
+    });
+
     it("client server", function (done) {
-        var DATUM1 = "Hello";
-        var DATUM2 = "GoodBye";
-        var TEST_VALUE = 0x1337;
-        var TEST_VALUE2 = "MONKEY";
-
-        var namespace = createNamespace('net');
+        var net = this.net;
+        var namespace = this.cls2.createNamespace('net');
 
         namespace.run(
             function namespace_run1(ctx) {

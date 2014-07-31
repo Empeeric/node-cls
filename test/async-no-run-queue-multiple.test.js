@@ -1,21 +1,34 @@
 'use strict';
 
-it("minimized test case that caused #6011 patch to fail", function (done) {
+describe("edges and regression testing", function () {
+    before(function () {
+        require.cache = {};
+        this.cls2 = require('../');
+    });
 
-    console.log('+');
-    // when the flaw was in the patch, commenting out this line would fix things:
-    process.nextTick(function () { console.log('!'); });
+    after(function () {
+        this.cls2.reset();
+        delete this.cls2;
+        require.cache = {};
+    });
 
-    var n = createNamespace("test");
-    expect(!n.get('state'), "state should not yet be visible");
 
-    n.run(function () {
-        n.set('state', true);
-        expect(n.get('state'), "state should be visible");
+    it("minimized test case that caused #6011 patch to fail", function (done) {
+        var n = this.cls2.createNamespace("test");
+        console.log('+');
+        // when the flaw was in the patch, commenting out this line would fix things:
+        process.nextTick(function () { console.log('!'); });
 
-        process.nextTick(function () {
+        expect(!n.get('state'), "state should not yet be visible");
+
+        n.run(function () {
+            n.set('state', true);
             expect(n.get('state'), "state should be visible");
-            done();
+
+            process.nextTick(function () {
+                expect(n.get('state'), "state should be visible");
+                done();
+            });
         });
     });
 });
