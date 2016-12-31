@@ -6,12 +6,14 @@
     "Forrest L Norvell <ogd@aoaioxxysz.net>"
   ],
   "dependencies": {
-    "emitter-listener": "",
-    "shimmer": ""
+    "async-listener": "^0.6.3",
+    "emitter-listener": "^1.0.1",
+    "shimmer": "^1.1.0"
   },
-  "description": "userland implementation of CLS via AsyncListener (^0.11.12)",
+  "description": "userland implementation of CLS via AsyncListener (node ^4.0.0)",
   "devDependencies": {
-    "asynctrace": "",
+    "asynctrace": "*",
+    "istanbul": "",
     "chai": "",
     "mocha": "",
     "tap": ""
@@ -20,11 +22,9 @@
     "test": "test"
   },
   "engines": {
-    "node": "^0.11.13"
+    "node": "4"
   },
-  "engineStrict": {
-    "node": "^0.11.13"
-  },
+  "engineStrict": true,
   "jshintConfig": {
     "globals": {
       "after": true,
@@ -52,9 +52,9 @@
   "license": "BSD",
   "main": "cls.js",
   "name": "cls2",
-  "repository": "Empeeric/node-cls",
+  "repository": "node4good/node-cls",
   "scripts": {
     "test": "tap test/*.tap.js && mocha"
   },
-  "version": "1.0.4"
+  "version": "2.0.0"
 }

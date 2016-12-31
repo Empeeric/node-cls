@@ -1,17 +1,23 @@
 'use strict';
 
-var EE = require('events').EventEmitter;
-var assert = require('assert');
-var wrapEmitter = require('emitter-listener');
-var tracing = require('tracing');
-var shimmer = require('shimmer');
+const EE = require('events').EventEmitter;
+const assert = require('assert');
+const wrapEmitter = require('emitter-listener');
+const shimmer = require('shimmer');
+try {
+    require('async-listener');
+} catch (e) {
+    if (e.message !== "Don't require polyfill unless needed") throw e;
+}
+const tracing = process;
+
 /*
  *
  * CONSTANTS
  *
  */
-var CONTEXTS_SYMBOL = 'cls@contexts';
-var ERROR_SYMBOL = 'error@context';
+const CONTEXTS_SYMBOL = 'cls@contexts';
+const ERROR_SYMBOL = 'error@context';
 
 
 
@@ -30,7 +36,7 @@ if (!process.env.NO_CLS_FOR_EMMITERS && !EE.usingCLS) {
 // load polyfill if native support is unavailable
 //if (!process.addAsyncListener) require('async-listener');
 
-var namespaces;
+let namespaces;
 
 function Namespace(name) {
     this.name = name;
@@ -60,7 +66,7 @@ Namespace.prototype.createContext = function () {
 };
 
 Namespace.prototype.run = function (fn) {
-    var context = this.createContext();
+    const context = this.createContext();
     this.enter(context);
     try {
         fn(context);
@@ -85,7 +91,7 @@ Namespace.prototype.bind = function (fn, context) {
         }
     }
 
-    var self = this;
+    const self = this;
     return function () {
         self.enter(context);
         try {
@@ -123,7 +129,7 @@ Namespace.prototype.exit = function (context) {
     }
 
     // Fast search in the stack using lastIndexOf
-    var index = this._set.lastIndexOf(context);
+    const index = this._set.lastIndexOf(context);
 
     assert.ok(index >= 0, "context not currently entered; can't exit");
     assert.ok(index, "can't remove top context");
@@ -135,8 +141,8 @@ Namespace.prototype.exit = function (context) {
 Namespace.prototype.bindEmitter = function (emitter) {
     assert.ok(emitter.on && emitter.addListener && emitter.emit, "can only bind real EEs");
 
-    var namespace = this;
-    var thisSymbol = 'context@' + this.name;
+    const namespace = this;
+    const thisSymbol = 'context@' + this.name;
 
     // Capture the context active at the time the emitter is bound.
     function attach(listener) {
@@ -153,16 +159,16 @@ Namespace.prototype.bindEmitter = function (emitter) {
     function bind(unwrapped) {
         if (!(unwrapped && unwrapped[CONTEXTS_SYMBOL])) return unwrapped;
 
-        var wrapped = unwrapped;
-        var contexts = unwrapped[CONTEXTS_SYMBOL];
-        var thunk = null;
+        let wrapped = unwrapped;
+        const contexts = unwrapped[CONTEXTS_SYMBOL];
+        let thunk = null;
         Object.keys(contexts).forEach(function (name) {
             thunk = contexts[name];
             wrapped = thunk.namespace.bind(wrapped, thunk.context);
         });
-        var patched = function () {
-            for (var i = 0; i < arguments.length; ++i){
-                var arg = arguments[0];
+        const patched = function () {
+            for (let i = 0; i < arguments.length; ++i){
+                const arg = arguments[0];
                 filteredEEBind(arg, thunk.context);
             }
             wrapped.apply(this, arguments);
@@ -179,7 +185,7 @@ function filteredEEBind(target, ctx) {
     if (!ctx) return;
     if ('wrap@before' in target) return;
 
-    var name = Object.getPrototypeOf(target).constructor.name;
+    const name = Object.getPrototypeOf(target).constructor.name;
     switch (name) {
         case  'ClientRequest':
         case  'IncomingMessage':
@@ -188,7 +194,7 @@ function filteredEEBind(target, ctx) {
             break;
 
         case  'Socket':
-            var server = target.server;
+            const server = target.server;
             if (server && 'wrap@before' in server)
                 Namespace._active.bindEmitter(target);
             break;
@@ -213,7 +219,7 @@ function get(name) {
 function create(name) {
     assert.ok(name, "namespace must be given a name!");
 
-    var namespace = new Namespace(name);
+    const namespace = new Namespace(name);
     namespace.id = tracing.addAsyncListener({
         create: function () {
             return namespace.active;
@@ -237,7 +243,7 @@ function create(name) {
 }
 
 function destroy(name) {
-    var namespace = get(name);
+    const namespace = get(name);
 
     assert.ok(namespace, "can't delete nonexistent namespace!");
     assert.ok(namespace.id, "don't assign to process.namespaces directly!");
