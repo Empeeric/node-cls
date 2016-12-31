@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Empeeric/node-cls.png?branch=master "Build Status")](https://travis-ci.org/Empeeric/node-cls) 
+[![Build Status](https://travis-ci.org/node4good/node-cls.png?branch=master "Build Status")](https://travis-ci.org/node4good/node-cls) 
 
 [![NPM](https://nodei.co/npm/cls2.png)](https://nodei.co/npm/cls2/)
 
