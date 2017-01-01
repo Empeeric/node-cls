@@ -16,7 +16,7 @@
     "istanbul": "",
     "chai": "",
     "mocha": "",
-    "tap": ""
+    "tap": "^6.3.2"
   },
   "directories": {
     "test": "test"
@@ -24,7 +24,7 @@
   "engines": {
     "node": "4"
   },
-  "engineStrict": true,
+  
   "jshintConfig": {
     "globals": {
       "after": true,

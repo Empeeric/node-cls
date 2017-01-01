@@ -14,9 +14,9 @@ test("continuation-local storage glue with a throw in the continuation chain",
 
     d.on('error', function (blerg) {
       t.equal(blerg.message, "explicitly nonlocal exit", "got the expected exception");
-      t.notOk(namespace.get('outer'), "outer context should have been exited by throw");
+      t.ok(namespace.get('outer'), "outer context is still active");
       t.notOk(namespace.get('inner'), "inner context should have been exited by throw");
-      t.equal(namespace._set.length, 0, "should be back to global state");
+      t.equal(namespace._set.length, 1, "should be back to outer state");
 
       cls.destroyNamespace('test');
       t.end();
@@ -57,6 +57,29 @@ test("synchronous throw attaches the context", function (t) {
   });
 
   cls.destroyNamespace('cls@synchronous');
+});
+
+test("synchronous throw checks if error exists", function (t) {
+  t.plan(2);
+
+  var namespace = cls.createNamespace('cls@synchronous-null-error');
+  namespace.run(function () {
+    namespace.set('value', 'transaction clear');
+    try {
+      namespace.run(function () {
+        namespace.set('value', 'transaction set');
+        throw null;
+      });
+    }
+    catch (e) {
+      // as we had a null error, cls couldn't set the new inner value
+      t.equal(namespace.get('value'), 'transaction clear', 'from outer value');
+    }
+
+    t.equal(namespace.get('value'), 'transaction clear', "everything was reset");
+  });
+
+  cls.destroyNamespace('cls@synchronous-null-error');
 });
 
 test("throw in process.nextTick attaches the context", function (t) {

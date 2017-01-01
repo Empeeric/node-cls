@@ -5,20 +5,13 @@ var test         = require('tap').test
   , cls          = require('../../cls.js')
   ;
 
-function fresh(name, context) {
-  context.tearDown(function () {
-    cls.destroyNamespace(name);
-  });
-  return cls.createNamespace(name);
-}
-
 test("event emitters bound to CLS context", function (t) {
-  t.plan(12);
+  t.plan(13);
 
-  t.test("handler registered in context", function (t) {
+  t.test("handler registered in context, emit out of context", function (t) {
     t.plan(1);
 
-    var n  = fresh('in', this)
+    var n  = cls.createNamespace('in')
       , ee = new EventEmitter()
       ;
 
@@ -27,6 +20,7 @@ test("event emitters bound to CLS context", function (t) {
       n.bindEmitter(ee);
       ee.on('event', function () {
         t.equal(n.get('value'), 'hello', "value still set in EE.");
+        cls.destroyNamespace('in');
       });
     });
 
@@ -36,7 +30,7 @@ test("event emitters bound to CLS context", function (t) {
   t.test("once handler registered in context", function (t) {
     t.plan(1);
 
-    var n  = fresh('inOnce', this)
+    var n  = cls.createNamespace('inOnce')
       , ee = new EventEmitter()
       ;
 
@@ -45,21 +39,23 @@ test("event emitters bound to CLS context", function (t) {
       n.bindEmitter(ee);
       ee.once('event', function () {
         t.equal(n.get('value'), 'hello', "value still set in EE.");
+        cls.destroyNamespace('inOnce');
       });
     });
 
     ee.emit('event');
   });
 
-  t.test("handler registered out of context", function (t) {
+  t.test("handler registered out of context, emit in context", function (t) {
     t.plan(1);
 
-    var n  = fresh('out', this)
+    var n  = cls.createNamespace('out')
       , ee = new EventEmitter()
       ;
 
     ee.on('event', function () {
       t.equal(n.get('value'), 'hello', "value still set in EE.");
+      cls.destroyNamespace('out');
     });
 
     n.run(function () {
@@ -73,12 +69,13 @@ test("event emitters bound to CLS context", function (t) {
   t.test("once handler registered out of context", function (t) {
     t.plan(1);
 
-    var n  = fresh('outOnce', this)
+    var n  = cls.createNamespace('outOnce')
       , ee = new EventEmitter()
       ;
 
     ee.once('event', function () {
       t.equal(n.get('value'), 'hello', "value still set in EE.");
+      cls.destroyNamespace('outOnce');
     });
 
     n.run(function () {
@@ -89,13 +86,33 @@ test("event emitters bound to CLS context", function (t) {
     });
   });
 
+  t.test("handler registered out of context, emit out of context", function (t) {
+    t.plan(1);
+
+    var n  = cls.createNamespace('out')
+      , ee = new EventEmitter()
+      ;
+
+    ee.on('event', function () {
+      t.equal(n.get('value'), undefined, "no context.");
+      cls.destroyNamespace('out');
+    });
+
+    n.run(function () {
+      n.set('value', 'hello');
+      n.bindEmitter(ee);
+    });
+
+    ee.emit('event');
+  });
+
   t.test("once handler registered out of context on Readable", function (t) {
     var Readable = require('stream').Readable;
 
     if (Readable) {
       t.plan(12);
 
-      var n  = fresh('outOnceReadable', this)
+      var n  = cls.createNamespace('outOnceReadable')
         , re = new Readable()
         ;
 
@@ -107,6 +124,7 @@ test("event emitters bound to CLS context", function (t) {
       re.once('data', function (data) {
         t.equal(n.get('value'), 'hello', "value still set in EE");
         t.equal(data, 'blah', "emit still works");
+        cls.destroyNamespace('outOnceReadable');
       });
 
       n.run(function () {
@@ -137,7 +155,7 @@ test("event emitters bound to CLS context", function (t) {
   t.test("emitter with newListener that removes handler", function (t) {
     t.plan(3);
 
-    var n  = fresh('newListener', this)
+    var n  = cls.createNamespace('newListener')
       , ee = new EventEmitter()
       ;
 
@@ -166,6 +184,7 @@ test("event emitters bound to CLS context", function (t) {
 
     ee.on('data', function (chunk) {
       t.equal(chunk, 'chunk', 'got data event');
+      cls.destroyNamespace('newListener');
     });
 
     ee.emit('drain', 'chunk');
@@ -177,7 +196,7 @@ test("event emitters bound to CLS context", function (t) {
     if (Readable) {
       t.plan(12);
 
-      var n  = fresh('outOnReadable', this)
+      var n  = cls.createNamespace('outOnReadable')
         , re = new Readable()
         ;
 
@@ -198,6 +217,7 @@ test("event emitters bound to CLS context", function (t) {
         re.on('data', function (data) {
           t.equal(n.get('value'), 'hello', "value still set in EE");
           t.equal(data, 'blah', "emit still works");
+          cls.destroyNamespace('outOnReadable');
         });
       });
 
@@ -220,7 +240,7 @@ test("event emitters bound to CLS context", function (t) {
   t.test("handler added but used entirely out of context", function (t) {
     t.plan(2);
 
-    var n  = fresh('none', this)
+    var n  = cls.createNamespace('none')
       , ee = new EventEmitter()
       ;
 
@@ -232,6 +252,7 @@ test("event emitters bound to CLS context", function (t) {
     ee.on('event', function () {
       t.ok(n, "n is set");
       t.notOk(n.get('value'), "value shouldn't be visible");
+      cls.destroyNamespace('none');
     });
 
     ee.emit('event');
@@ -241,7 +262,7 @@ test("event emitters bound to CLS context", function (t) {
     t.plan(3);
 
     var http = require('http')
-      , n    = fresh('no_listener', this)
+      , n  = cls.createNamespace('no_listener')
       ;
 
     // only fails on Node < 0.10
@@ -265,6 +286,7 @@ test("event emitters bound to CLS context", function (t) {
         t.equal(body, 'WORD');
 
         server.close();
+        cls.destroyNamespace('no_listener');
       });
     });
   });
@@ -273,11 +295,12 @@ test("event emitters bound to CLS context", function (t) {
     t.plan(2);
 
     var ee = new EventEmitter()
-      , n  = fresh('param_list', this)
+      , n  = cls.createNamespace('param_list')
       ;
 
     function sent(value) {
       t.equal(value, 3, "sent value is correct");
+      cls.destroyNamespace('param_list');
     }
 
     ee.on('send', sent);
@@ -291,7 +314,7 @@ test("event emitters bound to CLS context", function (t) {
     t.plan(4);
 
     var ee = new EventEmitter()
-      , n  = fresh('kaboom', this)
+      , n  = cls.createNamespace('kaboom')
       ;
 
     n.bindEmitter(ee);
@@ -307,6 +330,7 @@ test("event emitters bound to CLS context", function (t) {
       t.equal(typeof ee.removeListener, 'function', 'removeListener is still there');
       t.notOk(ee.removeListener.__wrapped, "removeListener got unwrapped");
       t.equal(ee._events.bad, kaboom, "listener isn't still bound");
+      cls.destroyNamespace('kaboom');
     });
   });
 

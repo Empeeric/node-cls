@@ -76,7 +76,7 @@ overwriting the parent's.
 A simple, annotated example of how this nesting behaves:
 
 ```javascript
-var createNamespace = require('contination-local-storage').createNamespace;
+var createNamespace = require('continuation-local-storage').createNamespace;
 
 var writer = createNamespace('writer');
 writer.run(function () {
@@ -186,7 +186,20 @@ Create a new context on which values can be set or read. Run all the functions
 that are called (either directly, or indirectly through asynchronous functions
 that take callbacks themselves) from the provided callback within the scope of
 that namespace. The new context is passed as an argument to the callback
-whne it's called.
+when it's called.
+
+### namespace.runAndReturn(callback)
+
+* return: the return value of the callback
+
+Create a new context on which values can be set or read. Run all the functions
+that are called (either directly, or indirectly through asynchronous functions
+that take callbacks themselves) from the provided callback within the scope of
+that namespace. The new context is passed as an argument to the callback
+when it's called.
+
+Same as `namespace.run()` but returns the return value of the callback rather
+than the context.
 
 ### namespace.bind(callback, [context])
 
@@ -210,8 +223,8 @@ are doing other things with HTTP listeners:
 
 ```javascript
 http.createServer(function (req, res) {
-  writer.add(req);
-  writer.add(res);
+  writer.bindEmitter(req);
+  writer.bindEmitter(res);
 
   // do other stuff, some of which is asynchronous
 });
@@ -243,8 +256,20 @@ setInterval(function () {
 
 A context is a plain object created using the enclosing context as its prototype.
 
-[timer functions]: timers.html
-[setImmediate]:    timers.html#timers_setimmediate_callback_arg
-[setTimeout]:      timers.html#timers_settimeout_callback_delay_arg
-[setInterval]:     timers.html#timers_setinterval_callback_delay_arg
+# copyright & license
+
+See [LICENSE](https://github.com/othiym23/node-continuation-local-storage/blob/master/LICENSE)
+for the details of the BSD 2-clause "simplified" license used by
+`continuation-local-storage`. This package was developed in 2012-2013 (and is
+maintained now) by Forrest L Norvell, [@othiym23](https://github.com/othiym23),
+with considerable help from Timothy Caswell,
+[@creationix](https://github.com/creationix), working for The Node Firm. This
+work was underwritten by New Relic for use in their Node.js instrumentation
+agent, so maybe give that a look if you have some Node.js
+performance-monitoring needs.
+
+[timer functions]: https://nodejs.org/api/timers.html
+[setImmediate]:    https://nodejs.org/api/timers.html#timers_setimmediate_callback_arg
+[setTimeout]:      https://nodejs.org/api/timers.html#timers_settimeout_callback_delay_arg
+[setInterval]:     https://nodejs.org/api/timers.html#timers_setinterval_callback_delay_arg
 [cps]:             http://en.wikipedia.org/wiki/Continuation-passing_style
