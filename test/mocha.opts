@@ -1,2 +1,2 @@
--r ./test-common.js
+-r ./test/test-common.js
 -r asynctrace

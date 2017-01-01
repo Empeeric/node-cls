@@ -2,7 +2,7 @@
 
 var tap             = require('tap')
   , test            = tap.test
-  , createNamespace = require('../../cls.js').createNamespace
+  , createNamespace = require('../../context.js').createNamespace
   ;
 
 var zlib = require('zlib');

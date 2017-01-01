@@ -1,12 +1,19 @@
+sudo: false
+
 script:
-  - "npm test"
+- npm test
 
 language: node_js
-
 node_js:
-  - "0.10"
-  - "0.12"
-  - "4"
-  - "6"
-
-sudo: false
+- '4'
+- '6'
+deploy:
+  provider: npm
+  email: me@refack.com
+  api_key:
+    secure: emnwdIBaVGyAzcHH/2Gyx9jS4y74sIcZIfn7ydZgJ+mtPlO73hs0K8OrZPIVNUrPmF9kKNM7zU/TRWnOMd+1uKi6E0nAf9TK7arKwbprxi0cK4v5RVMCoIQAHVmeLlI5y54/1kIZ6e+CRl1eaq2xv/tNb1LDXV8rC8PwD7K0QCU=
+  on:
+    all_branches: true
+    tags: true
+    node: '6'
+    repo: node4good/cls2

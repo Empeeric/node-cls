@@ -6,7 +6,7 @@
     <pass-parent-env>true</pass-parent-env>
     <envs />
     <ui>bdd</ui>
-    <extra-mocha-options>-r ./test-common.js -c</extra-mocha-options>
+    <extra-mocha-options>-c</extra-mocha-options>
     <test-kind>DIRECTORY</test-kind>
     <test-directory>$PROJECT_DIR$/test</test-directory>
     <recursive>false</recursive>

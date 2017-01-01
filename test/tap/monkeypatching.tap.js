@@ -5,7 +5,7 @@ if (!process.addAsyncListener) {
   test("overwriting startup.processNextTick", function (t) {
     t.plan(2);
 
-    t.doesNotThrow(function () { require('../context.js'); });
+    t.doesNotThrow(function () { require('../../context.js'); });
 
     t.ok(process.nextTick.__wrapped, "should wrap process.nextTick()");
   });

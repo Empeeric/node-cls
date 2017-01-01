@@ -9,6 +9,6 @@ process.once('uncaughtException', function (err) {
   }
 });
 
-var cls = require('../../cls.js');
+var cls = require('../../context.js');
 var ns = cls.createNamespace('x');
 ns.run(function () { throw new Error('oops'); });

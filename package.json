@@ -1,9 +1,8 @@
 {
-  "author": "Refael Ackermann<refael@empeeric.com>",
+  "author": "Refael Ackermann <me@refack.com>",
   "contributors": [
     "Forrest L Norvell <ogd@aoaioxxysz.net>",
-    "Tim Caswell <tim@creationix.com>",
-    "Forrest L Norvell <ogd@aoaioxxysz.net>"
+    "Tim Caswell <tim@creationix.com>"
   ],
   "dependencies": {
     "async-listener": "^0.6.3",
@@ -12,10 +11,10 @@
   },
   "description": "userland implementation of CLS via AsyncListener (node ^4.0.0)",
   "devDependencies": {
-    "asynctrace": "*",
-    "istanbul": "",
-    "chai": "",
-    "mocha": "",
+    "asynctrace": "^1.6.2",
+    "istanbul": "^0.4.5",
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
     "tap": "^6.3.2"
   },
   "directories": {
@@ -24,7 +23,7 @@
   "engines": {
     "node": "4"
   },
-  
+
   "jshintConfig": {
     "globals": {
       "after": true,
@@ -50,11 +49,11 @@
     "logging"
   ],
   "license": "BSD",
-  "main": "cls.js",
+  "main": "context.js",
   "name": "cls2",
   "repository": "node4good/node-cls",
   "scripts": {
-    "test": "tap test/*.tap.js && mocha"
+    "test": "mocha"
   },
   "version": "2.0.2"
 }
